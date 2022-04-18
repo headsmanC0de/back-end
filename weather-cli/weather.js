@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 //Особливість виклику CLI утиліти
 import { getArgs } from './helpers/args.js';
-import { getWeather } from './services/api.service.js';
-import { printHelp, printSuccess, printError } from './services/log.service.js';
-import { saveKeyValue, TOKEN_DICTIONARY } from './services/storage.service.js';
+import { getIcon, getWeather } from './services/api.service.js';
+import { printHelp, printSuccess, printError, printWearher } from './services/log.service.js';
+import { getKeyValue, saveKeyValue, TOKEN_DICTIONARY } from './services/storage.service.js';
 
 const saveToken = async (token) => {
 	if (!token.length) {
@@ -18,10 +18,25 @@ const saveToken = async (token) => {
 	}
 };
 
+const saveCity = async (city) => {
+	if (!city.length) {
+		printError('Ви не вказали місто');
+		return;
+	}
+	try {
+		await saveKeyValue(TOKEN_DICTIONARY.city, city);
+		printSuccess('Місто збережене');
+	} catch (e) {
+		printError(e.message);
+	}
+};
+
 const getForcast = async () => {
 	try {
 		// Виводимо погоду
-		const weather = await getWeather('Kiev');
+		const city = process.env.CITY ?? (await getKeyValue(TOKEN_DICTIONARY.city));
+		const weather = await getWeather(city);
+		printWearher(weather, getIcon(weather.weather[0].icon));
 	} catch (e) {
 		//Шлях до статусу розписаний в документації axios
 		if (e?.response?.status == 404) {
@@ -39,16 +54,17 @@ const initCLI = () => {
 	// Отриманий об'єкт беремо і опрацьовуємо
 	if (args.h) {
 		// Виводимо help
-		printHelp();
+		return printHelp();
 	}
 	if (args.s) {
 		// Встановлюємо місто
+		return saveCity(args.s);
 	}
 	if (args.t) {
 		// Встановлюємо токен
 		return saveToken(args.t);
 	}
-	getForcast();
+	return getForcast();
 };
 
 initCLI();

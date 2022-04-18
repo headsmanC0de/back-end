@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import dedent from 'dedent-js'
+import dedent from 'dedent-js';
 
 const printError = (error) => {
 	console.log(chalk.bgRed(' * ERROR * ') + ' ' + error);
@@ -21,4 +21,16 @@ const printHelp = () => {
 	);
 };
 
-export { printError, printSuccess, printHelp };
+const printWearher = (res, icon) => {
+		console.log(
+			dedent`${chalk.bgGreen(' = Weather = ')} Погода в місті ${res.name}
+			${icon}  ${res.weather[0].description}
+			🌡  Температура: ${res.main.temp}(На відчуття як: ${res.main.feels_like})
+			☁  Вологість: ${res.main.humidity}%
+			🌬  Швидкість вітру: ${res.wind.speed}
+
+		`
+		);
+};
+
+export { printError, printSuccess, printHelp, printWearher };

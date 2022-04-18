@@ -8,13 +8,29 @@ import { saveKeyValue, TOKEN_DICTIONARY } from './services/storage.service.js';
 const saveToken = async (token) => {
 	if (!token.length) {
 		printError('Токен непереданий');
-		return
+		return;
 	}
 	try {
 		await saveKeyValue(TOKEN_DICTIONARY.token, token);
-		printSuccess('Токен збережений')
+		printSuccess('Токен збережений');
 	} catch (e) {
-		printError(e.message)
+		printError(e.message);
+	}
+};
+
+const getForcast = async () => {
+	try {
+		// Виводимо погоду
+		const weather = await getWeather('Kiev');
+	} catch (e) {
+		//Шлях до статусу розписаний в документації axios
+		if (e?.response?.status == 404) {
+			printError('404 - Невірно вказане місто');
+		} else if (e?.response?.status == 401) {
+			printError('401 - Невірно вказаний токен');
+		} else {
+			printError(e.message);
+		}
 	}
 };
 
@@ -32,8 +48,7 @@ const initCLI = () => {
 		// Встановлюємо токен
 		return saveToken(args.t);
 	}
-	// Виводимо погоду
-	getWeather('Kiev')
+	getForcast();
 };
 
 initCLI();

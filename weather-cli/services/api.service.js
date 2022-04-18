@@ -17,8 +17,8 @@ const getWeather = async (city) => {
 			units: 'metric'
 		}
 	});
-	console.log(data)
 	return data
+
 	/* Спосіб Використання встроїних можливостей
 	Базова url до якої ми будемо додавати параметри
 	const url = new URL('https://api.openweathermap.org/data/2.5/weather');
